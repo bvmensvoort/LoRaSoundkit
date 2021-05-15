@@ -56,6 +56,19 @@ void Oled::showValues( float la, float lc, float lz, bool ttnOk) {
   display->setCursor(0, 51);  display->printf("TTN %s", (ttnOk) ? "ok" : "fail");
   display->display();
 }
+
+void Oled::showMinMaxValues( float min, float avg, float max, bool ttnOk) {
+  display->clearDisplay();
+  //display->setRotation( 2);  // rotate 180 degrees
+  display->setTextColor(WHITE);
+  display->setTextSize(2);
+  display->setCursor(0, 0);  display->printf("Min %.1f", min);
+  display->setCursor(0, 17);  display->printf("Avg %.1f", avg);
+  display->setCursor(0, 34);  display->printf("Max %.1f", max);
+  display->setCursor(0, 51);  display->printf("TTN %s", (ttnOk) ? "ok" : "fail");
+  display->display();
+}
+
 void Oled::showProgress( float ms, float totalms) {
   boolean isvertical = true;
   

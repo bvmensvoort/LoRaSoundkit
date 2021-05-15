@@ -154,7 +154,7 @@ void loop(void) {
     sendToTTN( aMeasurement, cMeasurement, zMeasurement);
 
 #if defined(ARDUINO_TTGO_LoRa32_V1)
-   oled.showValues( aMeasurement.avg, cMeasurement.avg, zMeasurement.avg, ttnOk);
+   oled.showMinMaxValues( aMeasurement.avg, cMeasurement.avg, zMeasurement.avg, ttnOk);
 #endif
 
     // reset counters etc.
