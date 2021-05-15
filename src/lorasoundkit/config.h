@@ -22,4 +22,12 @@
 #define APPKEY "80489B327CB6058C93614F5DC8187CD4"
 
 
+// Some aestethical options
+#define SHOWMINMAX  true   // Instead of dB(A), dB(C), dB(Z), show minimum, average and maximum of dB(Z)
+#define SHOWCYCLEPROGRESS   true
+
+
+// For easy debugging
+#define CONNECTTOLORA true
+
 #endif

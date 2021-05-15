@@ -66,9 +66,11 @@ void setup(void) {
   oled.begin();
 #endif
   soundSensor.begin();
-  loraBegin();
-  loraSetRxHandler( loracallback);        // set LoRa receive handler (downnlink
-  loraSend( 0, NULL, 0);                  // send LoRA Join message
+  if (CONNECTTOLORA) {
+    loraBegin();
+    loraSetRxHandler( loracallback);        // set LoRa receive handler (downnlink
+    loraSend( 0, NULL, 0);                  // send LoRA Join message
+  }
   digitalWrite( LED_BUILTIN, LOW);
 
   printf("End setup\n");
@@ -133,8 +135,12 @@ void loop(void) {
   aMeasurement.update( energy);
   cMeasurement.update( energy);
   zMeasurement.update( energy);
+  //printf("\nEnergy samples: %d, %d, %d, %d, %d, %d, %d, %d, %d", energy[0], energy[1], energy[2], energy[3], energy[4], energy[5], energy[6], energy[7], energy[8]);
+
 #if defined(ARDUINO_TTGO_LoRa32_V1)
+  if (SHOWCYCLEPROGRESS) {
     oled.showProgress( millis() - milliCount, cycleCount);
+  }
 #endif
 
   // calculate average and send
@@ -151,10 +157,16 @@ void loop(void) {
     //cMeasurement.print();
     //zMeasurement.print();
 
+  if (CONNECTTOLORA) {
     sendToTTN( aMeasurement, cMeasurement, zMeasurement);
+  }
 
 #if defined(ARDUINO_TTGO_LoRa32_V1)
+  if (SHOWMINMAX) {
    oled.showMinMaxValues( aMeasurement.avg, cMeasurement.avg, zMeasurement.avg, ttnOk);
+  } else {
+   oled.showValues( zMeasurement.min, zMeasurement.avg, zMeasurement.max, ttnOk);
+  }
 #endif
 
     // reset counters etc.
