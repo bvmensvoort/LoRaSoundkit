@@ -133,6 +133,9 @@ void loop(void) {
   aMeasurement.update( energy);
   cMeasurement.update( energy);
   zMeasurement.update( energy);
+#if defined(ARDUINO_TTGO_LoRa32_V1)
+    oled.showProgress( millis() - milliCount, cycleCount);
+#endif
 
   // calculate average and send
   if ( millis() - milliCount > cycleCount) {

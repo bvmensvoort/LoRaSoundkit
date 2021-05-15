@@ -56,3 +56,20 @@ void Oled::showValues( float la, float lc, float lz, bool ttnOk) {
   display->setCursor(0, 51);  display->printf("TTN %s", (ttnOk) ? "ok" : "fail");
   display->display();
 }
+void Oled::showProgress( float ms, float totalms) {
+  boolean isvertical = true;
+  
+  if (isvertical) {
+    // Show a bar on the right of the screen
+    float height = ms/totalms * SCREEN_HEIGHT;
+    if (height > SCREEN_HEIGHT) height = SCREEN_HEIGHT;
+    float hcol = SCREEN_WIDTH-1;
+    display->drawLine(hcol, SCREEN_HEIGHT-1-height, hcol, SCREEN_HEIGHT-1, WHITE);
+  } else {
+    // Show a bar on the bottom of the screen
+    float width = ms/totalms * SCREEN_WIDTH;
+    float vline = SCREEN_HEIGHT-1;
+    display->drawLine(0, vline, width, vline, WHITE);
+  }
+  display->display();
+}

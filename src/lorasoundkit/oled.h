@@ -17,6 +17,7 @@ class Oled {
     ~Oled();
     void begin();
     void showValues( float la, float lc, float lz, bool ttnOk);
+    void showProgress( float ms, float totalms);
 
   private:
      Adafruit_SSD1306 *display;
