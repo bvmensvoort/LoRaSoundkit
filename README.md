@@ -49,6 +49,10 @@ The table below shows the wiring between MEMS microphone (SPH0645 or NMP443) and
 #### N.B.
 For sound measurements lower then 30 dB, the supply to the MEMS microphone must be very clean. The 3V supplied by the Sparkfun ESP gives in my situation some rumble in low frequencies. It can be uncoupled by extra 100nf and 100 uF or a separate 3.3V stabilzer.
 
+## Driver in Windows
+For uploading to the device, it needs to be recognised by Windows.
+If the default driver is not installed correctly, you can use the [CP210x Universal Windows Driver](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers).
+
 ## Board configuration in PlatformIO
 
 Choose your board in the platformio.ini file and change "default_envs" in one of the two lines below: 
@@ -77,7 +81,7 @@ If you develop in PlatformIO, you can skip this section, libraries and macros ar
 
 #### LMIC
 There are several LIMC LoRaWan libraries. I use the LMIC library from MCCI-Catena, because this one is currently best maintained. 
-Download the library from https://github.com/mcci-catena/arduino-lmic and put it in your [arduino-path]\libraries\
+Download the library from https://github.com/mcci-catena/arduino-lmic and put it in your [arduino-path]\libraries\ or use the Library Manger `MCCI Arduino LoraWAN Library` and its dependency `MCCI LoraWAN LMIC Library`.
 	
 Take care that you change the frequency plan to Europe (if you are in Europe), because it is defaulted to the US. It can be changed in the file [arduino-path]\arduino-lmic-master\project_config\lmic_project_config.h
 ```
@@ -85,15 +89,18 @@ Take care that you change the frequency plan to Europe (if you are in Europe), b
 ```
 
 #### Monochrome OLED library
-For the TTGO board, download the libraries below and put them in your [Arduino-path]\libraries
+For the TTGO board, download the libraries below and put them in your [Arduino-path]\libraries or use the Library Manager `Adafruit SSD1306` and `Adafruit GFX Library`.
 ```
 https://github.com/adafruit/Adafruit_SSD1306
 https://github.com/adafruit/Adafruit-GFX-Library
 ```
 
 #### Arduino FFT
-I used the https://www.arduinolibraries.info/libraries/arduino-fft library.
+I used the https://www.arduinolibraries.info/libraries/arduino-fft library, in the Library Manager: `ArduinoFFT`.
 The two files “arduinoFFT.h” and arduinoFFT.ccp” are already in your .ino main directory
+
+#### Optional for debugging: LibPrintf
+When debugging code and using the Serial Monitor, you need `LibPrintf` to display debug messages.
 
 ## Config file
 In the config.h some parameters are defined.
@@ -109,6 +116,20 @@ Choose activation mode OTAA and copy the APPEUI, DEVEUI and APPKEY keys into thi
 #define APPEUI "0000000000000000"
 #define DEVEUI "0000000000000000"
 #define APPKEY "00000000000000000000000000000000"
+```
+
+#### Screen options
+When using the soundkit with a screen, you have an option to show a progressbar when the next LoRa upload will be. In addition you can choose if the screen shows dB(A), dB(C), dB(Z), or min/max/avg of dB(Z).
+```
+#define SHOWMINMAX false
+#define SHOWCYCLEPROGRESS true
+```
+
+#### Connecting to LoRa
+When starting the device, it can take a while before it successfully connects to LoRa (about an hour). Every cyclecount, the device tries to login to TTN. Under the hood the message is `EV_JOIN_TXCOMPLETE: no JoinAccept`. It could help to [change ClockError value](https://github.com/matthijskooijman/arduino-lmic/issues/122), but it didn't help for me.
+When debugging, you can disable the connection to TTN.
+```
+#define CONNECTTOLORA	true
 ```
 
 ## Specification
@@ -133,8 +154,9 @@ Every minute a message is composed from all measurements done in one minute, whi
 * min, max, and average levels for dB(Z)
 
 The message is send in a compressed binary format to TTN. The TTN payload decoder converts the messsage to a readable JSON message.
+Copy the payload_ttn.js code and paste in the TheThingsNetwork-console as a decoder. The decoder will computer dB(A) and dB(C) spectrum values from the dB(Z) spectrum values.
 
-#### Example of a JSON message:
+#### Example of a decoded JSON message:
 ```
   "la": {
     "avg": 44.2,
